@@ -60,7 +60,6 @@ class PokeGrid extends StatelessWidget {
                       child: FadeInAnimation(
                         child: GestureDetector(
                           onTap: () {
-                            //print('Clicou no Pokémon: ${pokemons[index].nome}');
                             Navigator.push(
                               context,
                               MaterialPageRoute(
