@@ -25,6 +25,7 @@ class Pokemon {
   late int total;
   late dynamic evolucaoPassada;
   late dynamic evolucaoFutura;
+  late List<String> ovo;
 
   Pokemon({
     required this.id,
@@ -48,31 +49,37 @@ class Pokemon {
     total = 0;
     evolucaoPassada = [];
     evolucaoFutura = [];
+    ovo = [];
   }
 
   static Future<List<Pokemon>> loadPokemons() async {
     try {
       String jsonString = await rootBundle.loadString('assets/pokedex.json');
       List<dynamic> jsonList = jsonDecode(jsonString);
-      
+
       List<Pokemon> pokemons = [];
-    for (int id = 1; id <= 809; id++) { // Itera sobre os IDs de 1 a 809
-      if (jsonList[id - 1] != null) { // Verifica se o JSON contém o Pokémon com o ID atual
-        Pokemon pokemon = Pokemon(id: id);
-        pokemon.dados = jsonList[id - 1];
-        pokemon.nome = pokemon.dados['name']['english'];
-        pokemon.tipo = pokemon.dados['type'];
-        pokemon.descricao = pokemon.dados['description'];
-        pokemon.hire = "${pokemon.dirAssets}images/pokedex/hires/${pokemon.id.toString().padLeft(3, '0')}.png";
-        pokemon.sprite = "${pokemon.dirAssets}images/pokedex/sprites/${pokemon.id.toString().padLeft(3, '0')}.png";
-        pokemon.thumb = "${pokemon.dirAssets}images/pokedex/thumbnails/${pokemon.id.toString().padLeft(3, '0')}.png";
-        pokemon._loadSobre();
-        pokemon._loadStatus();
-        pokemon._loadEvolucao();
-        pokemons.add(pokemon);
+      for (int id = 1; id <= 809; id++) {
+        // Itera sobre os IDs de 1 a 809
+        if (jsonList[id - 1] != null) {
+          // Verifica se o JSON contém o Pokémon com o ID atual
+          Pokemon pokemon = Pokemon(id: id);
+          pokemon.dados = jsonList[id - 1];
+          pokemon.nome = pokemon.dados['name']['english'];
+          pokemon.tipo = pokemon.dados['type'];
+          pokemon.descricao = pokemon.dados['description'];
+          pokemon.hire =
+              "${pokemon.dirAssets}images/pokedex/hires/${pokemon.id.toString().padLeft(3, '0')}.png";
+          pokemon.sprite =
+              "${pokemon.dirAssets}images/pokedex/sprites/${pokemon.id.toString().padLeft(3, '0')}.png";
+          pokemon.thumb =
+              "${pokemon.dirAssets}images/pokedex/thumbnails/${pokemon.id.toString().padLeft(3, '0')}.png";
+          pokemon._loadSobre();
+          pokemon._loadStatus();
+          pokemon._loadEvolucao();
+          pokemons.add(pokemon);
+        }
       }
-    }
-    return pokemons;
+      return pokemons;
     } catch (e) {
       // Tratar erros de carregamento ou decodificação do JSON
       // ignore: avoid_print
@@ -87,9 +94,36 @@ class Pokemon {
     altura = profile['height'];
     peso = profile['weight'];
     genero = profile['gender'];
-    habilidades = [
-      for (var ability in profile['ability']) if (ability[1] == "true") ability[0]
+    ovo = [
+      for (String egg in profile['egg']) egg
     ];
+    habilidades = [
+      for (var ability in profile['ability'])
+        ability[0]
+    ];
+  }
+
+  Map<String, List<dynamic>> getSobreMap() {
+    Map<String, List> about = { 'general': [], 'breeding': [] };
+    about['general']?.add({
+      "label": 'Espécie',
+      "data": especie.split(' Pokémon')[0]
+    });
+    about['general']?.add({"label": 'Altura', "data": altura });
+    about['general']?.add({"label": 'Peso', "data": peso });
+    about['general']?.add({"label": 'Habilidades', "data": habilidades.join(', ') });
+    List<String> genero_pokemon = genero.split(':');
+    about['gender'] = [{"male": genero_pokemon[0], "female": genero_pokemon[1] }];
+    about['breeding']?.add({
+      "label": 'Grupo ovos',
+      "data": ovo.asMap().containsKey(1) ? ovo[0] : 'Nenhum'
+    });
+    about['breeding']?.add({
+      "label": 'Ciclo ovos',
+      "data": ovo.asMap().containsKey(1) ? ovo[1] : ovo[0]
+    });
+
+    return about;
   }
 
   void _loadStatus() {
@@ -100,7 +134,8 @@ class Pokemon {
     ataqueEspecial = base['Sp. Attack'];
     defesaEspecial = base['Sp. Defense'];
     velocidade = base['Speed'];
-    total = vida + ataque + defesa + ataqueEspecial + defesaEspecial + velocidade;
+    total =
+        vida + ataque + defesa + ataqueEspecial + defesaEspecial + velocidade;
   }
 
   void _loadEvolucao() {
@@ -108,5 +143,4 @@ class Pokemon {
     evolucaoPassada = evolution.containsKey('prev') ? evolution['prev'] : [];
     evolucaoFutura = evolution.containsKey('next') ? evolution['next'] : [];
   }
-
 }
