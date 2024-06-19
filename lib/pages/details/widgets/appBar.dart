@@ -9,24 +9,26 @@ class AppBarDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height;
 
-    return Container(
-      height: 150,
+    return SizedBox(
+      height: 130,
       // color: Color.fromARGB(255, 255, 234, 148),
       child: Column(
         children: [
-    
-          //Linha dos botões.
+          //Primeira linha com botões.
           Padding(
             padding: const EdgeInsets.only(
               left:  15,
               right: 15,
-              top: 10),
+              top: 10
+            ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Visibility(
                   visible: true,
+                  //Botão de Retorno.
                   child: IconButton(
                     onPressed: (){
                       Navigator.of(context).pop();
@@ -35,8 +37,10 @@ class AppBarDetails extends StatelessWidget {
                     icon: const Icon(Icons.arrow_back),
                   ),
                 ),
+                //Botão de favorito.
                 IconButton(
-                  onPressed: (){},
+                  // ignore: avoid_print
+                  onPressed: (){print('Tamanho da tela: $screenHeight]');},
                   color: const Color.fromARGB(255, 255, 255, 255),
                   icon: const Icon(Icons.favorite_outline),
                 ),
@@ -44,56 +48,83 @@ class AppBarDetails extends StatelessWidget {
             ),
           ),
 
-          
-
-          //Linha do titulo.
-          Padding(
-            padding: const EdgeInsets.only(left:26),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Text(
-                  pokemon.nome,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontFamily: 'Google',
-                    fontWeight: FontWeight.bold,
-                    fontSize: 32,
-                  ),
+          //Segunda linha.
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(
+                  left: 26,
                 ),
-              ],
-            ),
-          ),
-
-          Padding(
-            padding: const EdgeInsets.only(left:26),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: pokemon.tipo.map((type) {
-                return Container(
-                  margin: const EdgeInsets.only(
-                    top: 5,
-                    right: 5),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 15,
-                    vertical: 2,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.35),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Text(
-                    type,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontFamily: 'Google',
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    //Nome do Pokémon.
+                    Text(
+                      pokemon.nome,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontFamily: 'Google',
+                        fontWeight: FontWeight.bold,
+                        fontSize: 36,
+                      ),
                     ),
-                  ),
-                );
-              }).toList(),
-            ),
+                    
+                    // Tipos do Pokémon.
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        top: 5,
+                      ),
+                      child: Row(
+                        children: pokemon.tipo.map((type) {
+                          return Container(
+                            margin: const EdgeInsets.only(top: 0, right: 5),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 15,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.25),
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            child: Text(
+                              type,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontFamily: 'Google',
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              //Id do Pokémon.
+              Padding(
+                padding: const EdgeInsets.only(
+                  right: 26,
+                ),
+                child: Column(
+                  children: [
+                    //Id do Pokémon.
+                    Text(
+                      '#${pokemon.id.toString().padLeft(3, '0')}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontFamily: 'Google',
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            ],
           ),
         ],
       ),

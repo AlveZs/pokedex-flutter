@@ -180,8 +180,8 @@ class PokeItem extends StatelessWidget {
                         vertical: 2,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.35),
-                        borderRadius: BorderRadius.circular(10),
+                        color: Colors.white.withOpacity(0.25),
+                        borderRadius: BorderRadius.circular(15),
                       ),
                       child: Text(
                         type,
