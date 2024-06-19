@@ -75,6 +75,7 @@ class Pokemon {
     return pokemons;
     } catch (e) {
       // Tratar erros de carregamento ou decodificação do JSON
+      // ignore: avoid_print
       print('Erro ao carregar dados dos Pokémon: $e');
       return [];
     }

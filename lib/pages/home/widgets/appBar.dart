@@ -8,7 +8,7 @@ class AppBarHome extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    return Container(
+    return SizedBox(
       height: 100,
       // color: Color.fromARGB(255, 255, 234, 148),
       child: Column(
