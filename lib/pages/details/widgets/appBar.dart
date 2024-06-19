@@ -12,7 +12,7 @@ class AppBarDetails extends StatelessWidget {
     double screenHeight = MediaQuery.of(context).size.height;
 
     return SizedBox(
-      height: 130,
+      height: 150,
       // color: Color.fromARGB(255, 255, 234, 148),
       child: Column(
         children: [
