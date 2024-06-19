@@ -3,6 +3,7 @@ import 'package:pokedex_flutter/consts/constPoke.dart';
 import 'package:pokedex_flutter/consts/constsApp.dart';
 import 'package:pokedex_flutter/models/pokemon.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:pokedex_flutter/pages/details/details.dart';
 
 class PokeGrid extends StatelessWidget {
   const PokeGrid({super.key});
@@ -24,7 +25,7 @@ class PokeGrid extends StatelessWidget {
           return const Expanded(
               child: Center(child: CircularProgressIndicator()));
         } else if (snapshot.hasError) {
-          return const Center(child: Text('Erro ao carregar os Pokémon.'));
+          return const Center(child: Text('Erro ao carregar os Pokémons.'));
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
           return const Center(child: Text('Nenhum Pokémon encontrado.'));
         }
@@ -34,6 +35,7 @@ class PokeGrid extends StatelessWidget {
         return Expanded(
           child: AnimationLimiter(
             child: GridView.builder(
+              physics: const BouncingScrollPhysics(),
               addAutomaticKeepAlives: true,
               padding: const EdgeInsets.only(
                 left: 24,
@@ -58,7 +60,12 @@ class PokeGrid extends StatelessWidget {
                       child: FadeInAnimation(
                         child: GestureDetector(
                           onTap: () {
-                            print('Clicou no Pokémon: ${pokemons[index].nome}');
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => DetailsPage(pokemon: pokemons[index])
+                              ),
+                            );
                           },
 
                           //PokeCard
@@ -148,6 +155,7 @@ class PokeItem extends StatelessWidget {
                   child: Text(
                     pokemons[index].nome,
                     style: TextStyle(
+                      color: Colors.white,
                       fontFamily: 'Google',
                       fontWeight: FontWeight.bold,
                       fontSize: constraints.maxWidth / 10,
@@ -160,7 +168,7 @@ class PokeItem extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.only(
                   left: constraints.maxWidth / 15,
-                  top: constraints.maxHeight / 2.2,
+                  top: constraints.maxHeight / 3,
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -178,6 +186,7 @@ class PokeItem extends StatelessWidget {
                       child: Text(
                         type,
                         style: const TextStyle(
+                          color: Colors.white,
                           fontFamily: 'Google',
                           fontWeight: FontWeight.bold,
                           fontSize: 12,
