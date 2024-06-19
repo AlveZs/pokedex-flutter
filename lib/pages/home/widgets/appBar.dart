@@ -42,20 +42,17 @@ class AppBarHome extends StatelessWidget {
     
           //Linha do titulo.
           const Padding(
-            padding: EdgeInsets.only(left:15),
+            padding: EdgeInsets.only(left:26),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Padding(
-                  padding: EdgeInsets.only(left:11),
-                  child: Text(
-                    "Pokédex",
-                    style: TextStyle(
-                      fontFamily: 'Google',
-                      fontWeight: FontWeight.bold,
-                      fontSize: 28,
-                    ),
-                  )
+                Text(
+                  "Pokédex",
+                  style: TextStyle(
+                    fontFamily: 'Google',
+                    fontWeight: FontWeight.bold,
+                    fontSize: 28,
+                  ),
                 ),
               ],
             ),

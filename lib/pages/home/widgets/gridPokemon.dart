@@ -3,26 +3,29 @@ import 'package:pokedex_flutter/consts/constPoke.dart';
 import 'package:pokedex_flutter/consts/constsApp.dart';
 import 'package:pokedex_flutter/models/pokemon.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:pokedex_flutter/pages/details/details.dart';
 
 class PokeGrid extends StatelessWidget {
   const PokeGrid({super.key});
 
   @override
   Widget build(BuildContext context) {
-      double screenWidth = MediaQuery.of(context).size.width;
-      
-      // Calcular o número de colunas com base na largura da tela
-      double minColumnWidth = 221;
-      int numColunas = (screenWidth / minColumnWidth).floor();
-      numColunas = numColunas > 1 ? numColunas : 2; // garantir um mínimo de 2 colunas
+    double screenWidth = MediaQuery.of(context).size.width;
+
+    // Calcular o número de colunas com base na largura da tela
+    double minColumnWidth = 221;
+    int numColunas = (screenWidth / minColumnWidth).floor();
+    numColunas =
+        numColunas > 1 ? numColunas : 2; // garantir um mínimo de 2 colunas
 
     return FutureBuilder<List<Pokemon>>(
       future: Pokemon.loadPokemons(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Expanded(child: Center(child: CircularProgressIndicator()));
+          return const Expanded(
+              child: Center(child: CircularProgressIndicator()));
         } else if (snapshot.hasError) {
-          return const Center(child: Text('Erro ao carregar os Pokémon.'));
+          return const Center(child: Text('Erro ao carregar os Pokémons.'));
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
           return const Center(child: Text('Nenhum Pokémon encontrado.'));
         }
@@ -31,46 +34,54 @@ class PokeGrid extends StatelessWidget {
 
         return Expanded(
           child: AnimationLimiter(
-                child: GridView.builder(
-                  addAutomaticKeepAlives: true,
-                  padding: const EdgeInsets.only(
-                    left: 24,
-                    right: 24,
-                    bottom: 24,
-                  ),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: numColunas,
-                    crossAxisSpacing: 10.0,
-                    mainAxisSpacing: 10.0,
-                    childAspectRatio: 1.6,
-                  ),
-                  itemCount: pokemons.length,
-                  itemBuilder: (context, index) {
-                    return SizedBox(
-                      height: 200,
-                      child: AnimationConfiguration.staggeredGrid(
-                        position: index,
-                        duration: const Duration(milliseconds: 375),
-                        columnCount: numColunas,
-                        child: ScaleAnimation(
-                          child: FadeInAnimation(
-                            child: GestureDetector(
-                              onTap: () {
-                                print('Clicou no Pokémon: ${pokemons[index].nome}');
-                              },
-                                    
-                              //PokeCard
-                              child: PokeItem(
-                                index: index,
-                                pokemons: pokemons),
-                            ),
+            child: GridView.builder(
+              physics: const BouncingScrollPhysics(),
+              addAutomaticKeepAlives: true,
+              padding: const EdgeInsets.only(
+                left: 24,
+                right: 24,
+                bottom: 24,
+              ),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: numColunas,
+                crossAxisSpacing: 10.0,
+                mainAxisSpacing: 10.0,
+                childAspectRatio: 1.6,
+              ),
+              itemCount: pokemons.length,
+              itemBuilder: (context, index) {
+                return SizedBox(
+                  height: 200,
+                  child: AnimationConfiguration.staggeredGrid(
+                    position: index,
+                    duration: const Duration(milliseconds: 375),
+                    columnCount: numColunas,
+                    child: ScaleAnimation(
+                      child: FadeInAnimation(
+                        child: GestureDetector(
+                          onTap: () {
+                            //print('Clicou no Pokémon: ${pokemons[index].nome}');
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => DetailsPage(pokemon: pokemons[index])
+                              ),
+                            );
+                          },
+
+                          //PokeCard
+                          child: PokeItem(
+                            index: index,
+                            pokemons: pokemons,
                           ),
                         ),
                       ),
-                    );
-                  },
-                ),
-              ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
         );
       },
     );
@@ -93,114 +104,114 @@ class PokeItem extends StatelessWidget {
     Color corBase = constPoke.obterColorPeloTipo(type: pokemons[index].tipo[0]);
     Color corMaisClara = corBase.withOpacity(0.8);
 
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: const BorderRadius.all(Radius.circular(bordaRadius)),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            corBase,
-            corMaisClara,
-          ],
+    return LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+      return Container(
+        decoration: BoxDecoration(
+          borderRadius: const BorderRadius.all(Radius.circular(bordaRadius)),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              corBase,
+              corMaisClara,
+            ],
+          ),
         ),
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(bordaRadius),
-        child: Stack(
-          children: [
-        
-            //Imagem da Pokebola.
-            Padding(
-              padding: const EdgeInsets.only(
-                left:120,
-                top:70,
-              ),
-              child: OverflowBox(
-                maxWidth: 200, // Aumentar o tamanho da pokebola
-                maxHeight: 200,
-                child: Opacity(
-                  opacity: 0.2,
-                  child: Transform.rotate(
-                    angle: -0.45,
-                    child: Image.asset(
-                      ConstsApp.whitePokeball,
-                      width: 140,
-                      height: 140,
-                    ),
-                  ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(bordaRadius),
+          child: Stack(
+            children: [
+              //Imagem da Pokebola.
+              Padding(
+                padding: const EdgeInsets.only(
+                  left: 120,
+                  top: 70,
                 ),
-              ),
-            ),
-        
-            //Nome do Pokemon.
-            Padding(
-              padding: const EdgeInsets.only(
-                left:20,
-                top: 40,
-              ),
-              child: Align(
-                alignment: Alignment.topLeft,
-                child: Text(
-                  pokemons[index].nome,
-                  style: const TextStyle(
-                    fontFamily: 'Google',
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                  ),
-                ),
-              ),
-            ),
-            
-            //Tipos do Pokemon.
-            Padding(
-              padding: const EdgeInsets.only(
-                left:20,
-                top: 62,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: pokemons[index].tipo.map((type) {
-                  return Container(
-                    margin: const EdgeInsets.only(
-                      top: 5
-                    ),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 15,
-                      vertical: 2
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.35),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Text(
-                      type,
-                      style: const TextStyle(
-                        fontFamily: 'Google',
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12,
+                child: OverflowBox(
+                  maxWidth: 200, // Aumentar o tamanho da pokebola
+                  maxHeight: 200,
+                  child: Opacity(
+                    opacity: 0.2,
+                    child: Transform.rotate(
+                      angle: -0.45,
+                      child: Image.asset(
+                        ConstsApp.whitePokeball,
+                        width: 140,
+                        height: 140,
                       ),
                     ),
-                  );
-                }
-              ).toList(),
+                  ),
+                ),
+              ),
+
+              //Nome do Pokemon.
+              Padding(
+                padding: EdgeInsets.only(
+                  left: constraints.maxWidth / 15,
+                  top: constraints.maxHeight / 10,
+                ),
+                child: Align(
+                  alignment: Alignment.topLeft,
+                  child: Text(
+                    pokemons[index].nome,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontFamily: 'Google',
+                      fontWeight: FontWeight.bold,
+                      fontSize: constraints.maxWidth / 10,
+                    ),
+                  ),
+                ),
+              ),
+
+              //Tipos do Pokemon.
+              Padding(
+                padding: EdgeInsets.only(
+                  left: constraints.maxWidth / 15,
+                  top: constraints.maxHeight / 3,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: pokemons[index].tipo.map((type) {
+                    return Container(
+                      margin: const EdgeInsets.only(top: 5),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 15,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.35),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text(
+                        type,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontFamily: 'Google',
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
                         ),
-            ),
-        
-          //Imagem do Pokemon.
-          Positioned(
-            bottom: 5,
-            right: 15,
-            child: Image.asset(
-              pokemons[index].hire,
-              width: 100,
-              height: 100,
-            ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+
+              //Imagem do Pokemon.
+              Positioned(
+                bottom: 5,
+                right: 15,
+                child: Image.asset(
+                  pokemons[index].hire,
+                  width: constraints.maxWidth / 2.5,
+                  height: constraints.maxWidth / 2.5,
+                ),
+              ),
+            ],
           ),
-          ],
         ),
-      ),
-    );
+      );
+    });
   }
 }
-
