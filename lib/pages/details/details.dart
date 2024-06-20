@@ -21,6 +21,11 @@ class DetailsPage extends StatelessWidget {
     Color corBase = constPoke.obterColorPeloTipo(type: pokemon.tipo[0]);
     Color corMaisClara = corBase.withOpacity(0.8);
 
+    final SliverOverlapAbsorberHandle appBarHandler =
+        SliverOverlapAbsorberHandle();
+    final SliverOverlapAbsorberHandle imageHandler =
+        SliverOverlapAbsorberHandle();
+
     return Scaffold(
       body: Stack(children: [
         //Tela.
@@ -39,38 +44,49 @@ class DetailsPage extends StatelessWidget {
             length: 4,
             child: NestedScrollView(
               headerSliverBuilder: (context, innerBoxIsScrolled) => [
-                AppBarDetails(pokemon: pokemon),
-                SliverPersistentHeader(
-                  pinned: true,
-                  floating: false,
-                  delegate: PokemonHeaderDelegate(
-                    toolBarHeight: screenHeight * 0.15,
-                    closedHeight: screenHeight * 0.15,
-                    openHeight: screenHeight * 0.15,
-                    corBase: corBase,
-                    pokemon: pokemon,
-                  ),
+                SliverOverlapAbsorber(
+                  handle: appBarHandler,
+                  sliver: AppBarDetails(pokemon: pokemon),
                 ),
-                SliverPersistentHeader(
-                  pinned: true,
-                  floating: false,
-                  delegate: TabBarDelegate(
-                    toolBarHeight: 60,
-                    closedHeight: 60,
-                    openHeight: 60,
+                SliverOverlapAbsorber(
+                  handle: imageHandler,
+                  sliver: SliverPersistentHeader(
+                    pinned: true,
+                    floating: false,
+                    delegate: PokemonHeaderDelegate(
+                      toolBarHeight: screenHeight * 0.1,
+                      closedHeight: screenHeight * 0.25,
+                      openHeight: screenHeight * 0.3,
+                      corBase: corBase,
+                      pokemon: pokemon,
+                    ),
                   ),
                 ),
               ],
-              body: Container(
-                color: Colors.white,
-                padding: const EdgeInsets.all(30),
-                child: TabBarView(children: [
-                  AboutPokemon(pokemon: pokemon),
-                  const Text('Status Base'),
-                  const Text('Evolução'),
-                  const Text('Ataques'),
-                ]),
-              ),
+              body: Builder(builder: (BuildContext context) {
+                return CustomScrollView(
+                  slivers: [
+                    SliverOverlapInjector(handle: appBarHandler),
+                    SliverOverlapInjector(handle: imageHandler),
+                    SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: Container(
+                        height: MediaQuery.of(context).orientation ==
+                                Orientation.portrait
+                            ? screenHeight * 0.5
+                            : screenHeight * 0.8,
+                        color: Colors.white,
+                        child: TabBarView(children: [
+                          AboutPokemon(pokemon: pokemon),
+                          const Text('Status Base'),
+                          const Text('Evolução'),
+                          const Text('Ataques'),
+                        ]),
+                      ),
+                    ),
+                  ],
+                );
+              }),
             ),
           ),
         ),
@@ -101,24 +117,47 @@ class PokemonHeaderDelegate extends SliverPersistentHeaderDelegate {
     return Container(
       height: toolBarHeight + openHeight,
       color: corBase,
-      child: Stack(
-        alignment: Alignment.bottomCenter,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          Container(
-            height: MediaQuery.of(context).size.height * 0.05,
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.vertical(
-                top: Radius.circular(50),
+          Stack(
+            alignment: Alignment.bottomCenter,
+            children: [
+              Container(
+                height: MediaQuery.of(context).size.height * 0.05,
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.vertical(
+                    top: Radius.circular(50),
+                  ),
+                ),
               ),
-            ),
-          ),
 
-          //Imagem do Pokémon.
-          Image.asset(
-            pokemon.hire,
-            height: 180,
-            width: 180,
+              //Imagem do Pokémon.
+              Image.asset(
+                pokemon.hire,
+                height: MediaQuery.of(context).size.height * 0.25,
+                width: MediaQuery.of(context).size.height * 0.25,
+                fit: BoxFit.fitHeight,
+              ),
+            ],
+          ),
+          Container(
+            color: Colors.white,
+            child: const TabBar(
+              tabs: [
+                Text('Sobre'),
+                Text('Status'),
+                Text('Evolução'),
+                Text('Ataques'),
+              ],
+              unselectedLabelColor: Color.fromARGB(255, 207, 207, 207),
+              labelStyle: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
+              labelPadding: EdgeInsets.only(bottom: 20),
+            ),
           ),
         ],
       ),
@@ -130,53 +169,6 @@ class PokemonHeaderDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   double get minExtent => toolBarHeight + closedHeight;
-
-  @override
-  bool shouldRebuild(SliverPersistentHeaderDelegate oldDelegate) => true;
-}
-
-class TabBarDelegate extends SliverPersistentHeaderDelegate {
-  double toolBarHeight;
-  //toolBarHeight Included in both
-  double closedHeight;
-  double openHeight;
-
-  TabBarDelegate({
-    required this.toolBarHeight,
-    required this.closedHeight,
-    required this.openHeight,
-  });
-
-  @override
-  Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return Container(
-      height: 40,
-      decoration: const BoxDecoration(
-        color: Colors.white,
-      ),
-      child: const TabBar(
-        tabs: [
-          Text('Sobre'),
-          Text('Status'),
-          Text('Evolução'),
-          Text('Ataques'),
-        ],
-        unselectedLabelColor: Color.fromARGB(255, 207, 207, 207),
-        labelStyle: TextStyle(
-          color: Colors.black,
-          fontWeight: FontWeight.bold,
-        ),
-        labelPadding: EdgeInsets.only(bottom: 20),
-      ),
-    );
-  }
-
-  @override
-  double get maxExtent => 40;
-
-  @override
-  double get minExtent => 40;
 
   @override
   bool shouldRebuild(SliverPersistentHeaderDelegate oldDelegate) => true;

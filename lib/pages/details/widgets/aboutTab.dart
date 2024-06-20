@@ -32,7 +32,8 @@ class AboutPokemon extends StatelessWidget {
   Widget build(BuildContext context) {
     Map<String, List> dadosSobre = pokemon.getSobreMap();
 
-    return SingleChildScrollView(
+    return Padding(
+      padding: const EdgeInsets.all(30),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
