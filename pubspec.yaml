@@ -18,6 +18,7 @@ dependencies:
   sliding_sheet:
   mobx:
   flutter_mobx:
+  shared_preferences: ^2.2.3
   
 dev_dependencies:
   flutter_test:
