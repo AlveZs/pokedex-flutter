@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:pokedex_flutter/pages/home/home.dart';
+import 'package:pokedex_flutter/utils/sharedPrefs.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await SharedPrefs().init();
   runApp(const MainApp());
 }
 

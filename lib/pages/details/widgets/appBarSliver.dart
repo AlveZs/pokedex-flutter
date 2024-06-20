@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:pokedex_flutter/consts/constPoke.dart';
+import 'package:pokedex_flutter/main.dart';
 import 'package:pokedex_flutter/models/pokemon.dart';
+import 'package:pokedex_flutter/utils/sharedPrefs.dart';
 
-class AppBarDetails extends StatelessWidget {
+class AppBarDetails extends StatefulWidget {
   final Pokemon pokemon;
   const AppBarDetails({
     super.key,
@@ -10,9 +12,24 @@ class AppBarDetails extends StatelessWidget {
   });
 
   @override
+  State<AppBarDetails> createState() => _AppBarDetailsState();
+}
+
+class _AppBarDetailsState extends State<AppBarDetails> {
+  bool isFavorite = false;
+
+  @override
+  void initState() {
+    List<String> allFavorites = SharedPrefs().favorites;
+    isFavorite = allFavorites.contains("${widget.pokemon.id}");
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
-    final Color corBase = constPoke.obterColorPeloTipo(type: pokemon.tipo[0]);
+    final Color corBase =
+        constPoke.obterColorPeloTipo(type: widget.pokemon.tipo[0]);
 
     return SliverAppBar(
       pinned: true,
@@ -26,10 +43,22 @@ class AppBarDetails extends StatelessWidget {
         IconButton(
           // ignore: avoid_print
           onPressed: () {
-            print('Tamanho da tela: $screenHeight]');
+            setState(() {
+              List<String> favorites = SharedPrefs().favorites;
+              if (isFavorite) {
+                favorites.removeWhere((id) => id == widget.pokemon.id.toString());
+              } else {
+                favorites.add(widget.pokemon.id.toString());
+              }
+              SharedPrefs().favorites = favorites;
+              isFavorite = !isFavorite;
+            });
           },
           color: const Color.fromARGB(255, 255, 255, 255),
-          icon: const Icon(Icons.favorite_outline),
+          icon: Icon(
+            isFavorite ? Icons.favorite : Icons.favorite_outline,
+            color: isFavorite ? Colors.pink : Colors.white,
+          ),
         ),
       ],
       flexibleSpace: FlexibleSpaceBar(
@@ -44,7 +73,7 @@ class AppBarDetails extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        pokemon.nome,
+                        widget.pokemon.nome,
                         style: const TextStyle(
                           color: Colors.white,
                           fontFamily: 'Google',
@@ -52,7 +81,7 @@ class AppBarDetails extends StatelessWidget {
                           fontSize: 36,
                         ),
                       ),
-                      PokemonTypes(pokemon: pokemon)
+                      PokemonTypes(pokemon: widget.pokemon)
                     ],
                   ),
                   const Spacer(),
@@ -62,7 +91,7 @@ class AppBarDetails extends StatelessWidget {
                         children: [
                           //Id do Pokémon.
                           Text(
-                            '#${pokemon.id.toString().padLeft(3, '0')}',
+                            '#${widget.pokemon.id.toString().padLeft(3, '0')}',
                             style: const TextStyle(
                               color: Colors.white,
                               fontFamily: 'Google',
