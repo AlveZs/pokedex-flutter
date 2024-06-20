@@ -14,17 +14,16 @@ dependencies:
   cupertino_icons:
   get_it:
   intl:
-  http:
-  sliding_sheet:
-  mobx:
-  flutter_mobx:
+  # http:
+  # mobx:
+  # flutter_mobx:
   
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^3.0.0
-  mobx_codegen:
-  build_runner:
+  # flutter_lints: ^3.0.0
+  # mobx_codegen:
+  # build_runner:
 
 flutter:
   uses-material-design: true

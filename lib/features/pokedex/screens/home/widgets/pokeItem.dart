@@ -1,106 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:pokedex_flutter/consts/constPoke.dart';
-import 'package:pokedex_flutter/consts/constsApp.dart';
-import 'package:pokedex_flutter/models/pokemon.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:pokedex_flutter/pages/details/details.dart';
-
-class PokeGrid extends StatelessWidget {
-  const PokeGrid({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-
-    // Calcular o número de colunas com base na largura da tela
-    double minColumnWidth = 221;
-    int numColunas = (screenWidth / minColumnWidth).floor();
-    numColunas =
-        numColunas > 1 ? numColunas : 2; // garantir um mínimo de 2 colunas
-
-    return FutureBuilder<List<Pokemon>>(
-      future: Pokemon.loadPokemons(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Expanded(
-              child: Center(child: CircularProgressIndicator()));
-        } else if (snapshot.hasError) {
-          return const Center(child: Text('Erro ao carregar os Pokémons.'));
-        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Center(child: Text('Nenhum Pokémon encontrado.'));
-        }
-
-        List<Pokemon> pokemons = snapshot.data!;
-
-        return Expanded(
-          child: AnimationLimiter(
-            child: GridView.builder(
-              physics: const BouncingScrollPhysics(),
-              addAutomaticKeepAlives: true,
-              padding: const EdgeInsets.only(
-                left: 24,
-                right: 24,
-                bottom: 24,
-              ),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: numColunas,
-                crossAxisSpacing: 10.0,
-                mainAxisSpacing: 10.0,
-                childAspectRatio: 1.6,
-              ),
-              itemCount: pokemons.length,
-              itemBuilder: (context, index) {
-                return SizedBox(
-                  height: 200,
-                  child: AnimationConfiguration.staggeredGrid(
-                    position: index,
-                    duration: const Duration(milliseconds: 375),
-                    columnCount: numColunas,
-                    child: ScaleAnimation(
-                      child: FadeInAnimation(
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => DetailsPage(pokemon: pokemons[index])
-                              ),
-                            );
-                          },
-
-                          //PokeCard
-                          child: PokeItem(
-                            index: index,
-                            pokemons: pokemons,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
+import 'package:pokedex_flutter/common/consts/constPoke.dart';
+import 'package:pokedex_flutter/common/consts/constPaths.dart';
+import 'package:pokedex_flutter/common/models/pokemon.dart';
 
 class PokeItem extends StatelessWidget {
-  final int index;
-  final List<Pokemon> pokemons;
+  final Pokemon pokemon;
 
   const PokeItem({
     super.key,
-    required this.index,
-    required this.pokemons,
+    required this.pokemon,
   });
 
   @override
   Widget build(BuildContext context) {
     const double bordaRadius = 18;
-    Color corBase = constPoke.obterColorPeloTipo(type: pokemons[index].tipo[0]);
+    Color corBase = pokemon.corBase;
     Color corMaisClara = corBase.withOpacity(0.8);
 
     return LayoutBuilder(
@@ -135,7 +49,7 @@ class PokeItem extends StatelessWidget {
                     child: Transform.rotate(
                       angle: -0.45,
                       child: Image.asset(
-                        ConstsApp.whitePokeball,
+                        ConstPath.whitePokeball,
                         width: 140,
                         height: 140,
                       ),
@@ -153,7 +67,7 @@ class PokeItem extends StatelessWidget {
                 child: Align(
                   alignment: Alignment.topLeft,
                   child: Text(
-                    pokemons[index].nome,
+                    pokemon.nome,
                     style: TextStyle(
                       color: Colors.white,
                       fontFamily: 'Google',
@@ -172,7 +86,7 @@ class PokeItem extends StatelessWidget {
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: pokemons[index].tipo.map((type) {
+                  children: pokemon.tipo.map((type) {
                     return Container(
                       margin: const EdgeInsets.only(top: 5),
                       padding: const EdgeInsets.symmetric(
@@ -202,7 +116,7 @@ class PokeItem extends StatelessWidget {
                 bottom: 5,
                 right: 15,
                 child: Image.asset(
-                  pokemons[index].hire,
+                  pokemon.hire,
                   width: constraints.maxWidth / 2.5,
                   height: constraints.maxWidth / 2.5,
                 ),

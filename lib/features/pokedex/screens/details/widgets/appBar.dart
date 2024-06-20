@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pokedex_flutter/models/pokemon.dart';
+import 'package:pokedex_flutter/common/models/pokemon.dart';
 
 class AppBarDetails extends StatelessWidget {
   final Pokemon pokemon;

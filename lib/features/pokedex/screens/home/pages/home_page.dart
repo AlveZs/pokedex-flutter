@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:pokedex_flutter/consts/constsApp.dart';
-import 'package:pokedex_flutter/pages/home/widgets/appBar.dart';
-import 'package:pokedex_flutter/pages/home/widgets/gridPokemon.dart';
+import 'package:pokedex_flutter/common/consts/constPaths.dart';
+import 'package:pokedex_flutter/common/models/pokemon.dart';
+import 'package:pokedex_flutter/features/pokedex/screens/details/container/details_container.dart';
+import 'package:pokedex_flutter/features/pokedex/screens/home/widgets/appBar.dart';
+import 'package:pokedex_flutter/features/pokedex/screens/home/widgets/pokeGrid.dart';
 
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
-
+  const HomePage({super.key, required this.pokemons, required this.onItemTap});
+  final List<Pokemon> pokemons;
+  final Function(String, DetailArguments) onItemTap;
 
   @override
   Widget build(BuildContext context) {
@@ -27,14 +30,14 @@ class HomePage extends StatelessWidget {
               opacity: 0.05,
               child: 
                 Image.asset(
-                ConstsApp.darkPokeball,
+                ConstPath.darkPokeball,
                 height: tamanhoDaPokebola,
                 width: tamanhoDaPokebola,
                 ),
             )
           ),
 
-          const Column(
+          Column(
             children: [
           
               //Espaçamento.
@@ -44,8 +47,8 @@ class HomePage extends StatelessWidget {
               AppBarHome(),
 
               //Grid.
-              PokeGrid(),
-
+              PokeGrid(pokemons: pokemons, onItemTap: onItemTap),
+              
             ],
           ),
         ],

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pokedex_flutter/pages/home/home.dart';
+import 'package:pokedex_flutter/common/repository/pokeRepository.dart';
+import 'package:pokedex_flutter/features/pokedex/screens/route.dart';
 
 void main() {
   runApp(const MainApp());
@@ -10,11 +11,11 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        body: HomePage()
-      ),
+      home: PokedexRoute(
+        repository: PokeRepository(),
+      )
     );
   }
 }
