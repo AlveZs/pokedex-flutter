@@ -4,14 +4,17 @@ import 'package:pokedex_flutter/consts/constsApp.dart';
 import 'package:pokedex_flutter/models/pokemon.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:pokedex_flutter/pages/details/details.dart';
+import 'package:pokedex_flutter/utils/sharedPrefs.dart';
 
 class PokeGrid extends StatelessWidget {
-  const PokeGrid({super.key});
+  const PokeGrid({super.key, required this.isFavoriteActive});
+
+  final bool isFavoriteActive;
 
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
-
+    List<int>favoriteIds = SharedPrefs().favorites.map((id) => int.parse(id)).toList();
     // Calcular o número de colunas com base na largura da tela
     double minColumnWidth = 221;
     int numColunas = (screenWidth / minColumnWidth).floor();
@@ -19,7 +22,9 @@ class PokeGrid extends StatelessWidget {
         numColunas > 1 ? numColunas : 2; // garantir um mínimo de 2 colunas
 
     return FutureBuilder<List<Pokemon>>(
-      future: Pokemon.loadPokemons(),
+      future: Pokemon.loadPokemons(
+        ids: isFavoriteActive ? favoriteIds : []
+      ),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Expanded(

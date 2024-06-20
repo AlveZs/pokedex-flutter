@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:pokedex_flutter/consts/constPoke.dart';
-import 'package:pokedex_flutter/main.dart';
 import 'package:pokedex_flutter/models/pokemon.dart';
 import 'package:pokedex_flutter/utils/sharedPrefs.dart';
 
@@ -27,7 +26,6 @@ class _AppBarDetailsState extends State<AppBarDetails> {
 
   @override
   Widget build(BuildContext context) {
-    double screenHeight = MediaQuery.of(context).size.height;
     final Color corBase =
         constPoke.obterColorPeloTipo(type: widget.pokemon.tipo[0]);
 
@@ -41,7 +39,6 @@ class _AppBarDetailsState extends State<AppBarDetails> {
       ),
       actions: [
         IconButton(
-          // ignore: avoid_print
           onPressed: () {
             setState(() {
               List<String> favorites = SharedPrefs().favorites;

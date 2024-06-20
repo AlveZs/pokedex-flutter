@@ -52,16 +52,15 @@ class Pokemon {
     ovo = [];
   }
 
-  static Future<List<Pokemon>> loadPokemons() async {
+  static Future<List<Pokemon>> loadPokemons({List<int> ids= const []}) async {
     try {
       String jsonString = await rootBundle.loadString('assets/pokedex.json');
       List<dynamic> jsonList = jsonDecode(jsonString);
-
       List<Pokemon> pokemons = [];
-      for (int id = 1; id <= 809; id++) {
-        // Itera sobre os IDs de 1 a 809
-        if (jsonList[id - 1] != null) {
-          // Verifica se o JSON contém o Pokémon com o ID atual
+
+      if (ids.isNotEmpty){
+        for (int id in ids){
+          if (id >= 1 && id <= 809 && jsonList[id - 1] != null) {
           Pokemon pokemon = Pokemon(id: id);
           pokemon.dados = jsonList[id - 1];
           pokemon.nome = pokemon.dados['name']['english'];
@@ -77,13 +76,33 @@ class Pokemon {
           pokemon._loadStatus();
           pokemon._loadEvolucao();
           pokemons.add(pokemon);
+          }
+        }
+      } else{
+          for (int id = 1; id <= 809; id++) {
+          // Itera sobre os IDs de 1 a 809
+          if (jsonList[id - 1] != null) {
+            // Verifica se o JSON contém o Pokémon com o ID atual
+            Pokemon pokemon = Pokemon(id: id);
+            pokemon.dados = jsonList[id - 1];
+            pokemon.nome = pokemon.dados['name']['english'];
+            pokemon.tipo = pokemon.dados['type'];
+            pokemon.descricao = pokemon.dados['description'];
+            pokemon.hire =
+                "${pokemon.dirAssets}images/pokedex/hires/${pokemon.id.toString().padLeft(3, '0')}.png";
+            pokemon.sprite =
+                "${pokemon.dirAssets}images/pokedex/sprites/${pokemon.id.toString().padLeft(3, '0')}.png";
+            pokemon.thumb =
+                "${pokemon.dirAssets}images/pokedex/thumbnails/${pokemon.id.toString().padLeft(3, '0')}.png";
+            pokemon._loadSobre();
+            pokemon._loadStatus();
+            pokemon._loadEvolucao();
+            pokemons.add(pokemon);
+          }
         }
       }
       return pokemons;
     } catch (e) {
-      // Tratar erros de carregamento ou decodificação do JSON
-      // ignore: avoid_print
-      print('Erro ao carregar dados dos Pokémon: $e');
       return [];
     }
   }
@@ -112,8 +131,8 @@ class Pokemon {
     about['general']?.add({"label": 'Altura', "data": altura });
     about['general']?.add({"label": 'Peso', "data": peso });
     about['general']?.add({"label": 'Habilidades', "data": habilidades.join(', ') });
-    List<String> genero_pokemon = genero.split(':');
-    about['gender'] = [{"male": genero_pokemon[0], "female": genero_pokemon[1] }];
+    List<String> generoPokemon = genero.split(':');
+    about['gender'] = [{"male": generoPokemon[0], "female": generoPokemon[1] }];
     about['breeding']?.add({
       "label": 'Grupo ovos',
       "data": ovo.asMap().containsKey(1) ? ovo[0] : 'Nenhum'
